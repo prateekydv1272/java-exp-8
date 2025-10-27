@@ -1,0 +1,56 @@
+---------Database Setup--------------
+CREATE TABLE Employee (
+    EmpID INT PRIMARY KEY,
+    Name VARCHAR(50),
+    Salary DECIMAL(10,2)
+);
+
+INSERT INTO Employee VALUES (1, 'John Doe', 50000);
+INSERT INTO Employee VALUES (2, 'Jane Smith', 60000);
+---------------------------------------
+
+--------Servlet (EmployeeServlet.java)--------
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+import java.sql.*;
+
+public class EmployeeServlet extends HttpServlet {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+
+        out.println("<h2>Employee Records</h2>");
+        out.println("<form action='EmployeeServlet' method='get'>");
+        out.println("Search by ID: <input type='text' name='empId'>");
+        out.println("<input type='submit' value='Search'>");
+        out.println("</form><br>");
+
+        String empId = request.getParameter("empId");
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/yourdb", "root", "password");
+            Statement stmt = con.createStatement();
+
+            String query = (empId != null && !empId.isEmpty()) ?
+                "SELECT * FROM Employee WHERE EmpID=" + empId :
+                "SELECT * FROM Employee";
+
+            ResultSet rs = stmt.executeQuery(query);
+
+            out.println("<table border='1'><tr><th>EmpID</th><th>Name</th><th>Salary</th></tr>");
+            while(rs.next()) {
+                out.println("<tr><td>" + rs.getInt("EmpID") + "</td>");
+                out.println("<td>" + rs.getString("Name") + "</td>");
+                out.println("<td>" + rs.getDouble("Salary") + "</td></tr>");
+            }
+            out.println("</table>");
+
+            con.close();
+        } catch(Exception e) {
+            out.println("Error: " + e.getMessage());
+        }
+    }
+}

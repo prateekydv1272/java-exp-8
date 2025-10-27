@@ -1,0 +1,41 @@
+1.Create HTML Login Form (login.html):--------------------
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login Page</title>
+</head>
+<body>
+    <h2>User Login</h2>
+    <form action="LoginServlet" method="post">
+        Username: <input type="text" name="username" required><br><br>
+        Password: <input type="password" name="password" required><br><br>
+        <input type="submit" value="Login">
+    </form>
+</body>
+</html>
+--------------------------------------------------------------
+2.Create Login Servlet (LoginServlet.java):-------------------
+
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+
+public class LoginServlet extends HttpServlet {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+
+        // Simple validation (hardcoded example)
+        if("admin".equals(username) && "admin123".equals(password)) {
+            out.println("<h2>Welcome, " + username + "!</h2>");
+        } else {
+            out.println("<h2>Invalid credentials! Please try again.</h2>");
+            out.println("<a href='login.html'>Back to Login</a>");
+        }
+    }
+}
